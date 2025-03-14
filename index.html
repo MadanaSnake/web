@@ -5,62 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python Experiment</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        #file-list {
-            margin-top: 20px;
-        }
-        .info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-        }
-        .info img {
-            width: 20px;
-            height: 20px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #file-list { margin-top: 20px; }
+        a { display: block; margin: 5px 0; text-decoration: none; color: blue; }
     </style>
 </head>
 <body>
-
     <h1>Python Experiment</h1>
-    <div id="file-list">Memuat daftar file...</div>
-
-    <a href="info.html" class="info">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Info_icon.svg" alt="Info">
-    </a>
+    <h3>Download Files</h3>
+    <div id="file-list">Loading files...</div>
 
     <script>
-        async function loadFiles() {
+        const username = "MadanaSnake";  // Ganti dengan username GitHub kamu
+        const repo = "source";  // Ganti dengan nama repo kamu
+        const branch = "main"; // Atau "master" sesuai repo
+        const folder = ""; // Kosongkan jika file di root repo, atau "FOLDER" jika ada di subfolder
+
+        async function fetchRepoFiles() {
+            const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${folder}?ref=${branch}`;
             try {
-                let response = await fetch('files.json'); // File JSON harus berisi daftar file
+                let response = await fetch(apiUrl);
                 let files = await response.json();
+                let fileListDiv = document.getElementById("file-list");
+                fileListDiv.innerHTML = "";
 
-                let fileList = document.getElementById("file-list");
-                fileList.innerHTML = "";
-
-                if (files.length === 0) {
-                    fileList.innerHTML = "<p>Tidak ada file.</p>";
-                } else {
-                    files.forEach(file => {
-                        let link = document.createElement("a");
-                        link.href = file.url;
-                        link.textContent = file.name;
-                        link.download = "";
-                        fileList.appendChild(link);
-                        fileList.appendChild(document.createElement("br"));
-                    });
-                }
+                files.forEach(file => {
+                    if (file.type === "file") {
+                        let fileLink = document.createElement("a");
+                        fileLink.href = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${file.path}`;
+                        fileLink.textContent = file.name;
+                        fileLink.setAttribute("download", file.name);
+                        fileListDiv.appendChild(fileLink);
+                    }
+                });
             } catch (error) {
-                document.getElementById("file-list").innerHTML = "<p>Gagal memuat daftar file.</p>";
+                document.getElementById("file-list").innerHTML = "Gagal mengambil file!";
             }
         }
 
-        loadFiles();
+        fetchRepoFiles();
     </script>
-
 </body>
 </html>
