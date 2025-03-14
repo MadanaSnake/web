@@ -10,6 +10,9 @@
             text-align: center;
             margin: 50px;
         }
+        #file-list {
+            margin-top: 20px;
+        }
         .info {
             position: fixed;
             bottom: 20px;
@@ -24,12 +27,40 @@
 <body>
 
     <h1>Python Experiment</h1>
-    <p>contents (<a href="file.zip" download>download</a>)</p>
-    <p>going down and down</p>
+    <div id="file-list">Memuat daftar file...</div>
 
     <a href="info.html" class="info">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Info_icon.svg" alt="Info">
     </a>
+
+    <script>
+        async function loadFiles() {
+            try {
+                let response = await fetch('files.json'); // File JSON harus berisi daftar file
+                let files = await response.json();
+
+                let fileList = document.getElementById("file-list");
+                fileList.innerHTML = "";
+
+                if (files.length === 0) {
+                    fileList.innerHTML = "<p>Tidak ada file.</p>";
+                } else {
+                    files.forEach(file => {
+                        let link = document.createElement("a");
+                        link.href = file.url;
+                        link.textContent = file.name;
+                        link.download = "";
+                        fileList.appendChild(link);
+                        fileList.appendChild(document.createElement("br"));
+                    });
+                }
+            } catch (error) {
+                document.getElementById("file-list").innerHTML = "<p>Gagal memuat daftar file.</p>";
+            }
+        }
+
+        loadFiles();
+    </script>
 
 </body>
 </html>
