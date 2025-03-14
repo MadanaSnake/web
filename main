@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositori GitHub Saya</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <h1>Repositori GitHub Saya</h1>
+    <ul id="repo-list">Loading...</ul>
+
+    <script>
+        const username = "USERNAME_GITHUB"; // Ganti dengan username GitHub-mu
+        const repoList = document.getElementById("repo-list");
+
+        fetch(`https://api.github.com/users/${username}/repos`)
+            .then(response => response.json())
+            .then(data => {
+                repoList.innerHTML = "";
+                data.forEach(repo => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<a href="${repo.html_url}" target="_blank">${repo.name}</a>`;
+                    repoList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                repoList.innerHTML = "Gagal memuat repositori.";
+                console.error("Error:", error);
+            });
+    </script>
+
+</body>
+</html>
